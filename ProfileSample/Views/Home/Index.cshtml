@@ -1,0 +1,17 @@
+﻿@using ProfileSample.Models
+@model List<ProfileSample.Models.ImageModel>
+
+@{
+    ViewBag.Title = "title";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    @foreach (ImageModel item in Model)
+    {
+        string converted = Convert.ToBase64String(item.Data);
+        var imgSrc = $"data:image/jpg;base64,{converted}";
+
+        <img src="@imgSrc" width="300" height="150"/>
+    }
+</div>
