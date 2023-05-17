@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Data.Entity;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using ProfileSample.DAL;
 using ProfileSample.Models;
@@ -9,28 +11,28 @@ namespace ProfileSample.Controllers
 {
     public class HomeController : Controller
     {
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            var context = new ProfileSampleEntities();
-
-            IQueryable<int> sources = context.ImgSources.Take(20).Select(x => x.Id);
-            
-            var model = new List<ImageModel>();
-
-            foreach (int id in sources)
+            using (var context = new ProfileSampleEntities())
             {
-                ImgSource item = context.ImgSources.Find(id);
+                var sources = await context
+                    .ImgSources
+                    .Take(20)
+                    .Select(x => new
+                    {
+                        x.Id,
+                        x.Name,
+                    }).ToListAsync();
 
-                var obj = new ImageModel
-                {
-                    Name = item.Name,
-                    Data = item.Data
-                };
+                List<ImageModel> model = sources
+                    .Select(x => new ImageModel
+                    {
+                        Id = x.Id,
+                        Name = x.Name,
+                    }).ToList();
 
-                model.Add(obj);
-            } 
-
-            return View(model);
+                return View(model);
+            }
         }
 
         public ActionResult Convert()
@@ -56,7 +58,7 @@ namespace ProfileSample.Controllers
                         context.ImgSources.Add(entity);
                         context.SaveChanges();
                     }
-                } 
+                }
             }
 
             return RedirectToAction("Index");
