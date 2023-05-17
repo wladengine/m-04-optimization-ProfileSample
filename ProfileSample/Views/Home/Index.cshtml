@@ -9,9 +9,7 @@
 <div class="row">
     @foreach (ImageModel item in Model)
     {
-        string converted = Convert.ToBase64String(item.Data);
-        var imgSrc = $"data:image/jpg;base64,{converted}";
-
+        var imgSrc = $"/Images/Get/{item.Id}";
         <img src="@imgSrc" width="300" height="150"/>
     }
 </div>
